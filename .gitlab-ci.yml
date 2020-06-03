@@ -1,0 +1,28 @@
+stages:
+  - test
+  - deploy
+
+test:
+  image: usgsastro/kube
+  stage: test
+  tags:
+    - dmz
+  script:
+    - mkdir ~/.kube
+    - echo "$DK8S_CONFIG" > ~/.kube/config
+    - kubectl config set-context --current --namespace croplands
+    - kubectl apply --dry-run=client -f k8s/
+
+deploy:
+  image: usgsastro/kube
+  stage: deploy
+  tags:
+    - dmz
+  script:
+    - mkdir ~/.kube
+    - echo "$DK8S_CONFIG" > ~/.kube/config
+    - kubectl config set-context --current --namespace croplands
+    - kubectl apply -f k8s/
+    - kubectl delete po -l app=croplands-db
+  only:
+    - master

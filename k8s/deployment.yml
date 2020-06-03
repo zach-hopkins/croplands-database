@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: croplands-db
+  namespace: croplands
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: croplands-db
+  template:
+    metadata:
+      labels:
+        app: croplands-db
+    spec:
+      containers:
+        - name: postgis
+          image: usgsastro/postgis
+          envFrom:
+            - secretRef:
+                name: croplands-db-creds
+          volumeMounts:
+            - name: croplands-db
+              mountPath: /var/lib/postgresql/data
+          ports:
+            - name: postgres
+              containerPort: 5432
+
+        - name: redis
+          image: redis:5
+          ports: [{ containerPort: 6379 }]
+
+      volumes:
+        - name: croplands-db
+          persistentVolumeClaim:
+            claimName: croplands-db

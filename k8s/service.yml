@@ -1,0 +1,19 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: croplands-db
+  namespace: croplands
+spec:
+  selector:
+    app: croplands-db
+  ports:
+  - name: postgres
+    protocol: TCP
+    port: 5432
+    targetPort: 5432
+
+  - name: redis
+    protocol: TCP
+    port: 6379
+    targetPort: 6379
+
